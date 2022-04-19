@@ -1,16 +1,29 @@
 #!/usr/bin/env bash
 
-if [[ ! -f .git/hooks/pre-commit ]]; then
-    cp "$0" .git/hooks/pre-commit
-    echo "Created pre-commit hook"
-fi
+################################################################################
+#
+# This Script generates the index.html which links to all recipes.
+# It also creates a pre-commit hook that builds the index.html whenever 
+# a new commit is done
+#
+################################################################################
 
+function create_pre_commit_hook() {
+    # Only copy this script to .git/hooks/pre-commit if files differ
+    if ! diff --brief $0 .git/hooks/pre-commit > /dev/null; then
+        cp --force "$0" .git/hooks/pre-commit
+        echo "Updated pre-commit hook"
+    fi
+}
 
-# Change internal field seperator to ";" instead of " " to enable strings with spaces as array elements
-IFS=";"
-recipes=($(grep --recursive --only-matching --perl-regexp --ignore-case '(?<=<h1>).*(?=</h1>)' ./recipes))
+function create_index_html() {
+    # Change internal field seperator to ";" instead of " " to enable strings with spaces as array elements
+    IFS=";"
+    local recipes
+    recipes=($(grep --recursive --only-matching --perl-regexp --ignore-case '(?<=<h1>).*(?=</h1>)' ./recipes))
+    readonly recipes
 
-cat << EOF > ./index.html
+    cat << EOF > ./index.html
 <!DOCTYPE html>
 <html lang="en">
 <meta charset="UTF-8">
@@ -28,6 +41,19 @@ cat << EOF > ./index.html
 </html>
 EOF
 
-echo "Created index.html with recipes"
+    # Add generated index.html to commit
+    git add ./index.html
 
-git add ./index.html
+    # Console output
+    echo "Created index.html with recipes"
+    for recipe in "${recipes[@]}"; do
+        echo "  - ${recipe##*:}"
+    done
+}
+
+function main() {
+    create_pre_commit_hook
+    create_index_html
+}
+
+main
