@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
-echo "Create index.html with recipes"
+if [[ ! -f .git/hooks/pre-commit ]]; then
+    cp "$0" .git/hooks/pre-commit
+    echo "Created pre-commit hook"
+fi
+
 
 # Change internal field seperator to ";" instead of " " to enable strings with spaces as array elements
 IFS=";"
-recipes=($(grep --recursive --only-matching --perl-regexp --ignore-case '(?<=<h1>)[a-z _-]*' ./recipes))
-
-echo "${recipes[0]}"
+recipes=($(grep --recursive --only-matching --perl-regexp --ignore-case '(?<=<h1>).*(?=</h1>)' ./recipes))
 
 cat << EOF > ./index.html
 <!DOCTYPE html>
@@ -25,3 +27,7 @@ cat << EOF > ./index.html
 
 </html>
 EOF
+
+echo "Created index.html with recipes"
+
+git add ./index.html
