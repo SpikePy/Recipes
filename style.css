@@ -8,7 +8,7 @@
 body {
     margin: 1em;
     font-size: 16px;
-    font-family: sans-serif
+    font-family: monospace
 }
 
 h1,
@@ -17,6 +17,14 @@ h3,
 h4 {
     margin: 1.5em 0 0.5em;
     text-transform: capitalize;
+}
+
+a {
+    text-decoration: none;
+}
+
+img {
+    max-width:100%;
 }
 
 ul,
@@ -56,6 +64,7 @@ td {
     text-align: left;
     padding-left: .1em;
     padding-right: .5em;
+    font-style: italic;
 }
 .ingredient {
     text-align: left;
