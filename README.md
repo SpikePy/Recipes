@@ -8,3 +8,4 @@ Just a list of recipes I like.
 Use them as source to copy from.
 
 - ℃
+- ½
